@@ -22,8 +22,8 @@ class dataset:
         self.score = 0
 
 # Import Data
-def imports():
-    df = pd.read_csv("mobil.csv")
+def imports(target):
+    df = pd.read_csv(target)
     return df
 
 # Convert Data
@@ -129,21 +129,9 @@ def insertionSort(arr_ds):
         d[j+1] = key
     return a, b, c, d
 
-# Final Sort
-def finalSort(arr_ds):
-    a = arr_ds.copy()
-    for i in range(1, len(a)):
-        key = a[i]
-        j = i-1
-        while j >=0 and key.score > a[j].score :
-                a[j+1] = a[j]
-                j -= 1
-        a[j+1] = key
-    return a
-
 # Export Data
-def exports(arr):
-    workbook = xlsxwriter.Workbook('rekomendasi.xlsx')
+def exports(arr, target):
+    workbook = xlsxwriter.Workbook(target)
     worksheet = workbook.add_worksheet()
 
     row = 0
@@ -158,19 +146,19 @@ def exports(arr):
 # Main Program
 if __name__ == "__main__":
 
-    # Import Data
-    arr_ds = convert(imports())
+    # Import Training Data
+    print("Importing mobil.xls...")
+    arr_ds = convert(imports("mobil.csv"))
 
-    # Input User Data
-    print("Input user preference: (size), (comfort), (economical), (speed), (price)")
-    temp = input()
-    temp_arr = list(map(float, temp.split()))
+    # Import Test Data
+    print("Importing test.xls...")
+    user_df = imports("test.csv")
     userPref = dataset()
-    userPref.size = temp_arr[0]
-    userPref.comfort = temp_arr[1]
-    userPref.economical = temp_arr[2]
-    userPref.speed = temp_arr[3]
-    userPref.price = temp_arr[4]
+    userPref.size = user_df.iloc[0][1]
+    userPref.comfort = user_df.iloc[0][2]
+    userPref.economical = user_df.iloc[0][3]
+    userPref.speed = user_df.iloc[0][4]
+    userPref.price = user_df.iloc[0][5]
     arr_ds.append(userPref)
     print()
 
@@ -201,56 +189,30 @@ if __name__ == "__main__":
 
     # Sort per Method
     print("Sorting each method...")
-    print("Highest four in euclid method:")
     sorted_euclid, sorted_manhattan, sorted_minkowski, sorted_supremum = insertionSort(arr_ds)
-    for i in range(4):
-        print("Name : {}, Euclid : {}".format(sorted_euclid[i].name, sorted_euclid[i].euclid_dist))
-    print("Highest four in manhattan method:")
-    for i in range(4):
-        print("Name : {}, Manhattan : {}".format(sorted_manhattan[i].name, sorted_manhattan[i].manhattan_dist))
-    print("Highest four in minkowski method:")
-    for i in range(4):
-        print("Name : {}, Minkowski : {}".format(sorted_minkowski[i].name, sorted_minkowski[i].minkowski_dist))
-    print("Highest four in supremum method:")
-    for i in range(4):
-        print("Name : {}, Supremum : {}".format(sorted_supremum[i].name, sorted_supremum[i].supremum_dist))
     print()
-
-    # Voting
-    print("Voting distances...")
-    for i in range(4):
-        j = 0
-        while sorted_euclid[i].name != arr_ds[j].name :
-            j = j + 1
-        arr_ds[j].score = arr_ds[j].score + 1
-    for i in range(4):
-        j = 0
-        while sorted_manhattan[i].name != arr_ds[j].name :
-            j = j + 1
-        arr_ds[j].score = arr_ds[j].score + 1
-    for i in range(4):
-        j = 0
-        while sorted_minkowski[i].name != arr_ds[j].name :
-            j = j + 1
-        arr_ds[j].score = arr_ds[j].score + 1
-    for i in range(4):
-        j = 0
-        while sorted_supremum[i].name != arr_ds[j].name :
-            j = j + 1
-        arr_ds[j].score = arr_ds[j].score + 1
-    
-    # Show Voting
-    print("Voting Results:")
-    for i in range(len(arr_ds)):
-        if arr_ds[i].score > 0:
-            print("Name : {}, Score : {}".format(arr_ds[i].name, arr_ds[i].score))
-    print()
-    
-    # Final Results
-    print("Final Results:")
-    sorted_final = finalSort(arr_ds)
+    print("Highest three in euclid method:")
     for i in range(3):
-        print("Name : {}, Size : {}, Comfort : {}, Economical : {}, Speed : {}, Price : {}".format(sorted_final[i].name, sorted_final[i].size, sorted_final[i].comfort, sorted_final[i].economical, sorted_final[i].speed, sorted_final[i].price))
+        print("Name : {}, Euclid : {}".format(sorted_euclid[i].name, sorted_euclid[i].euclid_dist))
+    print()
+    print("Highest three in manhattan method:")
+    for i in range(3):
+        print("Name : {}, Manhattan : {}".format(sorted_manhattan[i].name, sorted_manhattan[i].manhattan_dist))
+    print()
+    print("Highest three in minkowski method:")
+    for i in range(3):
+        print("Name : {}, Minkowski : {}".format(sorted_minkowski[i].name, sorted_minkowski[i].minkowski_dist))
+    print()
+    print("Highest three in supremum method:")
+    for i in range(3):
+        print("Name : {}, Supremum : {}".format(sorted_supremum[i].name, sorted_supremum[i].supremum_dist))
     
     # Export Data
-    exports(sorted_final)
+    print()
+    print("Exporting data...")
+    exports(sorted_euclid, "rekomendasi_euclidean.xls")
+    exports(sorted_manhattan, "rekomendasi_manhattan.xls")
+    exports(sorted_minkowski, "rekomendasi_minkowski.xls")
+    exports(sorted_supremum, "rekomendasi_supremum.xls")
+    print()
+    print("Exporting done.")
