@@ -18,8 +18,6 @@ class dataset:
         self.manhattan_dist = 0
         self.minkowski_dist = 0
         self.supremum_dist = 0
-        # Score for Voting
-        self.score = 0
 
 # Import Data
 def imports(target):
